@@ -7,21 +7,21 @@ const app = express();
 // and if after `/` is there any thing it will still go that route only
 // if you are using app.get() then it will match exactly to that string
 
+// ab?c: Matches ac or abc (zero or one b).
+// ab+c: Matches abc, abbc, abbbc, etc. (one or more bs).
+// ab*c: Matches ac, abc, abbc, etc. (zero or more bs or any thing between).
+// a(bc)?d: Means bc is optional === ad or abcd
+
+// user?userId=101 => means you are sending something in query
+//    you can use it as req.query
+
+// Dynamic params (colon :)
+// user/101
+// user/:userId => means you are sending something in params
+//    you can use it as req.params
+
 app.get('/user', (req, res) => {
   res.send({ firstName: 'Romesh', lastName: 'Yadav' });
-});
-
-app.post('/user', (req, res) => {
-  console.log(req.body);
-  res.send('Data successfully saved to the database!');
-});
-
-app.delete('/user', (req, res) => {
-  res.send('Deleted successfully');
-});
-
-app.use('/test', (req, res) => {
-  res.send('hello from the test');
 });
 
 app.listen(3000, () => {
