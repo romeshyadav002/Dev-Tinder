@@ -1,23 +1,18 @@
 const express = require('express');
-const {
-  adminAuthMiddleWare,
-  userAuthMiddleWare,
-} = require('./middlewares/auth');
 
 const app = express();
 
-// handle Auth middleware for only GET, POST,etc requests
-// this will run for all the request which contain `/admin' in it
-app.use('/admin', adminAuthMiddleWare);
-
-// you can use like this also if there are less no of request in which you want to check the particular middleware
-app.get('/user', userAuthMiddleWare, (req, res) => {
-  res.send('User data sent');
+app.get('/getUserData', (req, res) => {
+  throw new Error('abc');
 });
 
-app.get('/admin/getAllData', (req, res) => {
-  res.send('All data sent');
+// we need to use this at last because in this whenever there is any error in above request than it will come in this code
+app.use('/', (err, req, res, next) => {
+  if (err) {
+    res.status(500).send('Something went wrong');
+  }
 });
+// use try catch block that is a proper way
 
 app.listen(3000, () => {
   console.log('server is successfully listening on port 3000');
