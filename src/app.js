@@ -4,14 +4,29 @@ const { connectDB } = require('./config/database');
 const app = express();
 const { User } = require('./models/user');
 const url = process.env.MONGODB_URL;
+const { validateSignUpData } = require('./utils/validations');
+const bcrypt = require('bcrypt');
 
 // this is the middleware that will run for all the api request and this middleware reads the JSON file easily
 app.use(express.json());
 
 app.post('/signup', async (req, res) => {
-  // Creating a new instance of the User model
-  const user = new User(req.body);
   try {
+    // validation of data
+    validateSignUpData(req);
+
+    // encrypt the password
+    const { firstName, lastName, emailId, password } = req.body;
+    const passwordHash = bcrypt.hash(password, 10);
+
+    // Creating a new instance of the User model
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
+
     await user.save();
     res.send('User added Successfully');
   } catch (error) {
