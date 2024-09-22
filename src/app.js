@@ -5,14 +5,12 @@ const app = express();
 const { User } = require('./models/user');
 const url = process.env.MONGODB_URL;
 
+// this is the middleware that will run for all the api request and this middleware reads the JSON file easily
+app.use(express.json());
+
 app.post('/signup', async (req, res) => {
   // Creating a new instance of the User model
-  const user = new User({
-    firstName: 'Romesh',
-    lastName: 'Yadav',
-    emailId: 'abc@gmail.com',
-    password: 'fhijskj',
-  });
+  const user = new User(req.body);
   try {
     await user.save();
     res.send('User added Successfully');
