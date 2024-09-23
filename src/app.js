@@ -8,6 +8,7 @@ const { validateSignUpData } = require('./utils/validations');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const { userAuth } = require('./middlewares/auth');
 
 // this is the middleware that will run for all the api request and this middleware reads the JSON file easily
 app.use(express.json());
@@ -49,11 +50,15 @@ app.post('/login', async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
       // create a JWT token
-      const token = await jwt.sign({ _id: user._id }, 'DEV@TINDER');
+      const token = await jwt.sign({ _id: user._id }, 'DEV@TINDER', {
+        expiresIn: '1d',
+      });
       // console.log({ token });
 
       // add the token to cookie and send the response back to the user
-      res.cookie('token', token);
+      res.cookie('token', token, {
+        expires: new Date(Date.now()) + 12 * 3600000,
+      });
       res.send('Login Successful');
     } else {
       throw new Error('Invalid credentials');
@@ -63,25 +68,19 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/profile', async (req, res) => {
+app.get('/profile', userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error('Invalid token');
-    }
-
-    // validate my token
-    const decodedMessage = await jwt.verify(token, 'DEV@TINDER');
-    const { _id } = decodedMessage;
-    // console.log('logged in user is ', _id);
-    const user = await User.findById(_id);
-
-    if (!user) {
-      throw new Error('User doest not exist');
-    }
-
+    const user = req.user;
     res.send(user);
+  } catch (error) {
+    res.status(400).send('Error ' + error.message);
+  }
+});
+
+app.post('/sendConnectionRequest', userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send('request sent by ' + user.firstName);
   } catch (error) {
     res.status(400).send('Error ' + error.message);
   }
