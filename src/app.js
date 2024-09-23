@@ -47,17 +47,19 @@ app.post('/login', async (req, res) => {
       throw new Error('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       // create a JWT token
-      const token = await jwt.sign({ _id: user._id }, 'DEV@TINDER', {
-        expiresIn: '1d',
-      });
+      // const token = await jwt.sign({ _id: user._id }, 'DEV@TINDER', {
+      //   expiresIn: '1d',
+      // });
+      const token = await user.getJWT();
       // console.log({ token });
 
       // add the token to cookie and send the response back to the user
       res.cookie('token', token, {
-        expires: new Date(Date.now()) + 12 * 3600000,
+        expires: new Date(Date.now() + 12 * 3600000),
       });
       res.send('Login Successful');
     } else {
