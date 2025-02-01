@@ -3,7 +3,9 @@ const express = require('express');
 const { connectDB } = require('./config/database');
 const cookieParser = require('cookie-parser');
 const app = express();
-const url = process.env.MONGODB_URL;
+const url =
+  process.env.MONGODB_URL ||
+  'mongodb+srv://raojiromesh002:xym54lsXvWItlwHp@romeonodejs.eh7mv.mongodb.net/devTinder';
 const cors = require('cors');
 
 // whitelist the domain name
