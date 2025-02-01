@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const url = process.env.MONGODB_URL;
 const cors = require('cors');
+// require('./utils/cronjobs');
 
 // whitelist the domain name
 const corsOption = { origin: 'http://localhost:5173', credentials: true };
